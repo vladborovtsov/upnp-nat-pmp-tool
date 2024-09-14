@@ -15,11 +15,11 @@ required-features = ["pmp"]
 
 [features]
 upnp = ["pin-utils", "rupnp"]
-pmp = ["natpmp-ng"]
+pmp = ["crab_nat"]
 
 [dependencies]
 tokio = { version = "1.40.0", features = ["full"]}
 futures = { version = "0.3.30"}
 pin-utils = { version = "0.1.0", optional = true }
 rupnp = { version = "2.0.0", optional = true }
-natpmp-ng = { version = "0.5.0", optional = true }
+crab_nat = { version = "0.6.4", optional = true }
