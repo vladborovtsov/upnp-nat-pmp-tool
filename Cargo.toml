@@ -1,0 +1,25 @@
+[package]
+name = "upnp-nat-pmp-tool"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "upnp-tool"
+path = "src/upnp-tool/main.rs"
+required-features = ["upnp"]
+
+[[bin]]
+name = "nat-pmp-tool"
+path = "src/nat-pmp-tool/main.rs"
+required-features = ["pmp"]
+
+[features]
+upnp = ["pin-utils", "rupnp"]
+pmp = ["natpmp-ng"]
+
+[dependencies]
+tokio = { version = "1.40.0", features = ["full"]}
+futures = { version = "0.3.30"}
+pin-utils = { version = "0.1.0", optional = true }
+rupnp = { version = "2.0.0", optional = true }
+natpmp-ng = { version = "0.5.0", optional = true }
