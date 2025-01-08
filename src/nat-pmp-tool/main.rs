@@ -1,3 +1,4 @@
+use std::error::Error;
 use std::num::{NonZeroU16};
 use std::net::{IpAddr, Ipv4Addr};
 use crab_nat::{natpmp::*, InternetProtocol, PortMappingOptions};
@@ -89,21 +90,43 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let internal_port_nonzero = NonZeroU16::new(internal_port).unwrap();
                 let external_port_nonzero = NonZeroU16::new(external_port).unwrap();
                 let mut port_mapping_options = PortMappingOptions::default();
-                port_mapping_options.external_port = Option::from(external_port_nonzero);
+                //port_mapping_options.external_port = Option::from(external_port_nonzero);
                 port_mapping_options.lifetime_seconds = Some(ttl);
 
                 match protocol {
                     "TCP" => {
-                        let _mapping = try_port_mapping(
+                        match try_port_mapping(
                             IpAddr::from(gateway_ip),
                             InternetProtocol::Tcp,
                             internal_port_nonzero,
                             port_mapping_options
-                        ).await?;
-                        println!(
-                            "TCP Port mapping added: External port {} -> {}:{}",
-                            external_port, internal_ip, internal_port
-                        );
+                        ).await {
+                            Ok(_mapping) => {
+                                println!(
+                                    "TCP Port mapping added: External port {} -> {}:{}",
+                                    external_port, internal_ip, internal_port
+                                );
+                            }
+                            Err(e) => {
+                                // Print detailed error
+                                eprintln!("Failed to add TCP port mapping: {:?}", e);
+
+                                // If there's a source error, print it too
+                                if let Some(source) = e.source() {
+                                    eprintln!("Caused by: {}", source);
+                                }
+                            }
+                        }
+                        // let _mapping = try_port_mapping(
+                        //     IpAddr::from(gateway_ip),
+                        //     InternetProtocol::Tcp,
+                        //     internal_port_nonzero,
+                        //     port_mapping_options
+                        // ).await?;
+                        // println!(
+                        //     "TCP Port mapping added: External port {} -> {}:{}",
+                        //     external_port, internal_ip, internal_port
+                        // );
                     }
                     "UDP" => {
                         let _mapping = try_port_mapping(
